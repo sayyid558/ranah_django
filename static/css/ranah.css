@@ -1,0 +1,350 @@
+/* =====================================================================
+   RANAH - Tema "Oranye Modern"
+   ---------------------------------------------------------------------
+   Daftar isi:
+     1. Variabel warna & dasar
+     2. Tata letak aplikasi (sidebar, topbar, konten)
+     3. Komponen: tombol, kartu, lencana, tabel
+     4. Formulir
+     5. Dashboard
+     6. Kalender, Pustaka, Indikator
+     7. Halaman login
+     8. Responsif (ponsel & tablet)
+
+   Untuk mengganti warna utama cukup ubah variabel --o-* di bagian 1.
+   ===================================================================== */
+
+/* ---------- 1. Variabel warna & dasar ---------- */
+:root {
+  --o-50:  #fff7ed;
+  --o-100: #ffedd5;
+  --o-200: #fed7aa;
+  --o-300: #fdba74;
+  --o-400: #fb923c;
+  --o-500: #f97316;   /* warna utama */
+  --o-600: #ea580c;
+  --o-700: #c2410c;
+  --o-900: #7c2d12;
+
+  --ink:    #2b1a10;  /* teks utama (cokelat tua) */
+  --muted:  #8a6d5a;  /* teks sekunder */
+  --line:   #f3e3d3;  /* garis/border lembut */
+  --bg:     #fffaf5;  /* latar halaman */
+  --card:   #ffffff;
+
+  --ok: #15803d;  --ok-bg: #dcfce7;
+  --warn: #b45309; --warn-bg: #fef3c7;
+  --bad: #b91c1c;  --bad-bg: #fee2e2;
+  --info: #1d4ed8; --info-bg: #dbeafe;
+
+  --radius: 16px;
+  --shadow: 0 1px 2px rgba(124, 45, 18, .06), 0 8px 24px rgba(124, 45, 18, .07);
+  --grad: linear-gradient(135deg, #fb923c 0%, #f97316 50%, #ea580c 100%);
+  --font: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--bg);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--o-700); text-decoration: none; }
+a:hover { color: var(--o-600); }
+h1, h2, h3 { margin: 0; line-height: 1.25; }
+.ikon { flex-shrink: 0; vertical-align: middle; }
+.muted { color: var(--muted); }
+
+/* ---------- 2. Tata letak aplikasi ---------- */
+.app { display: flex; min-height: 100vh; }
+
+.sidebar {
+  position: fixed; inset: 0 auto 0 0; width: 272px;
+  background: #fff; border-right: 1px solid var(--line);
+  display: flex; flex-direction: column; padding: 20px 14px; z-index: 40;
+  transition: transform .25s ease;
+}
+.brand { display: flex; align-items: center; gap: 12px; padding: 4px 10px 18px; }
+.brand-logo {
+  width: 42px; height: 42px; border-radius: 13px; background: var(--grad); color: #fff;
+  display: grid; place-items: center; box-shadow: 0 6px 16px rgba(249, 115, 22, .35);
+}
+.brand-nama { font-weight: 800; font-size: 20px; letter-spacing: .5px; color: var(--o-700); }
+.brand-sub { font-size: 11px; color: var(--muted); margin-top: -2px; }
+
+.nav { flex: 1; overflow-y: auto; padding-right: 2px; }
+.nav-label { font-size: 11px; font-weight: 700; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; margin: 18px 12px 8px; }
+.nav-item {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-bottom: 4px;
+  border-radius: 12px; color: var(--ink); font-weight: 500; font-size: 14px; line-height: 1.3;
+  transition: background .15s, color .15s;
+}
+.nav-item:hover { background: var(--o-50); color: var(--o-700); }
+.nav-item.aktif { background: var(--grad); color: #fff; box-shadow: 0 6px 14px rgba(249, 115, 22, .3); }
+.nav-nomor {
+  width: 26px; height: 26px; border-radius: 9px; flex-shrink: 0; display: grid; place-items: center;
+  background: var(--o-100); color: var(--o-700); font-size: 12px; font-weight: 800;
+}
+.nav-item.aktif .nav-nomor { background: rgba(255, 255, 255, .25); color: #fff; }
+
+.sidebar-foot { border-top: 1px solid var(--line); padding-top: 14px; }
+.user-card { display: flex; align-items: center; gap: 10px; padding: 6px 8px 12px; }
+.avatar {
+  width: 38px; height: 38px; border-radius: 50%; background: var(--o-100); color: var(--o-700);
+  display: grid; place-items: center; font-weight: 800;
+}
+.user-nama { font-weight: 700; font-size: 14px; line-height: 1.2; }
+.user-peran { font-size: 12px; color: var(--muted); }
+.btn-keluar {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer;
+  border: 1px solid var(--line); background: #fff; color: var(--ink); padding: 9px; border-radius: 12px;
+  font: inherit; font-weight: 600; font-size: 14px;
+}
+.btn-keluar:hover { background: var(--o-50); border-color: var(--o-200); color: var(--o-700); }
+
+.main { flex: 1; margin-left: 272px; min-width: 0; }
+.topbar {
+  position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 14px;
+  padding: 14px 32px; background: rgba(255, 250, 245, .85); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.topbar h1 { font-size: 16px; font-weight: 700; color: var(--muted); }
+.btn-menu { display: none; border: 0; background: var(--o-100); color: var(--o-700); width: 40px; height: 40px; border-radius: 12px; cursor: pointer; }
+.topbar-kanan { margin-left: auto; }
+.chip { background: var(--o-100); color: var(--o-700); font-weight: 700; font-size: 12px; padding: 6px 12px; border-radius: 999px; }
+.content { padding: 28px 32px 48px; max-width: 1280px; }
+
+/* Pesan (toast) */
+.pesan-list { display: grid; gap: 10px; margin-bottom: 20px; }
+.pesan { padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 14px; border: 1px solid transparent; }
+.pesan.success { background: var(--ok-bg); color: var(--ok); border-color: #bbf7d0; }
+.pesan.warning { background: var(--warn-bg); color: var(--warn); border-color: #fde68a; }
+.pesan.error   { background: var(--bad-bg); color: var(--bad); border-color: #fecaca; }
+.pesan.info    { background: var(--info-bg); color: var(--info); }
+.alert { padding: 12px 16px; border-radius: 12px; margin-bottom: 18px; font-size: 14px; }
+.alert-warn { background: var(--warn-bg); color: var(--warn); }
+.alert-info { background: var(--o-50); color: var(--o-700); border: 1px solid var(--o-200); }
+
+/* Kepala halaman */
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+.page-head h2 { font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
+.eyebrow { margin: 0 0 4px; font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--o-600); }
+.aksi-kepala { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- 3. Komponen UI ---------- */
+.btn {
+  display: inline-flex; align-items: center; gap: 8px; border: 1px solid transparent; cursor: pointer;
+  padding: 10px 18px; border-radius: 12px; font: inherit; font-weight: 700; font-size: 14px;
+  transition: transform .1s, box-shadow .15s, background .15s;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary { background: var(--grad); color: #fff; box-shadow: 0 6px 16px rgba(249, 115, 22, .3); }
+.btn-primary:hover { color: #fff; box-shadow: 0 8px 20px rgba(249, 115, 22, .4); }
+.btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
+.btn-ghost:hover { background: var(--o-50); border-color: var(--o-200); color: var(--o-700); }
+.btn-danger { background: #dc2626; color: #fff; }
+.btn-danger:hover { background: #b91c1c; color: #fff; }
+.btn-sm { padding: 7px 12px; font-size: 13px; }
+
+.btn-icon {
+  display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+  background: var(--o-50); color: var(--o-700); border: 0; cursor: pointer;
+}
+.btn-icon:hover { background: var(--o-100); }
+.btn-icon.bahaya { color: var(--bad); background: var(--bad-bg); }
+
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.card-pad { padding: 22px; }
+.card h3 { font-size: 16px; font-weight: 800; }
+
+/* Lencana status */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; background: #f5f5f4; color: #57534e; }
+.badge-belum, .badge-baru, .badge-tidak_ada { background: #f5f5f4; color: #57534e; }
+.badge-diterima, .badge-proses, .badge-menunggu { background: var(--warn-bg); color: var(--warn); }
+.badge-terverifikasi, .badge-selesai, .badge-dijawab { background: var(--ok-bg); color: var(--ok); }
+.badge-revisi { background: var(--bad-bg); color: var(--bad); }
+.badge-hak { background: var(--o-100); color: var(--o-700); }
+
+/* Tabel */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 10px; padding: 14px; margin-bottom: 16px; align-items: center; }
+.filter-bar .input { width: auto; min-width: 140px; }
+.filter-bar .cari { flex: 1; min-width: 200px; }
+.tabel-wrap { overflow-x: auto; }
+table.tabel { width: 100%; border-collapse: collapse; font-size: 14px; }
+.tabel th {
+  text-align: left; padding: 13px 16px; background: var(--o-50); color: var(--o-900);
+  font-size: 12px; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; border-bottom: 1px solid var(--line);
+}
+.tabel td { padding: 13px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.tabel tbody tr:hover { background: #fffbf7; }
+.tabel tbody tr:last-child td { border-bottom: 0; }
+.tabel .aksi { white-space: nowrap; text-align: right; }
+.tabel .aksi > * { margin-left: 4px; }
+.kosong { text-align: center; padding: 48px 16px !important; color: var(--muted); }
+
+.paginasi { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+.paginasi .tombol { display: flex; gap: 8px; }
+
+/* ---------- 4. Formulir ---------- */
+.input, select.input, textarea.input {
+  width: 100%; padding: 10px 14px; border: 1px solid #ecd9c6; border-radius: 12px; background: #fff;
+  font: inherit; color: var(--ink); transition: border-color .15s, box-shadow .15s;
+}
+.input:focus { outline: 0; border-color: var(--o-400); box-shadow: 0 0 0 4px rgba(249, 115, 22, .15); }
+textarea.input { resize: vertical; }
+.checkbox { width: 18px; height: 18px; accent-color: var(--o-500); }
+
+.form-card { max-width: 860px; padding: 28px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.lebar { grid-column: 1 / -1; }
+.field label { font-weight: 700; font-size: 13px; color: var(--o-900); }
+.field label em { color: var(--o-600); font-style: normal; margin-left: 3px; }
+.field small { color: var(--muted); font-size: 12px; }
+.field small.err { color: var(--bad); font-weight: 600; }
+.field.cek .cek-label { display: flex; align-items: center; gap: 10px; font-weight: 600; cursor: pointer; padding: 10px 0; }
+.form-aksi { display: flex; gap: 10px; margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+
+.konteks { display: grid; gap: 12px; margin: 0 0 24px; padding: 18px; background: var(--o-50); border: 1px solid var(--o-200); border-radius: 14px; }
+.konteks dt { font-size: 12px; font-weight: 700; color: var(--o-700); text-transform: uppercase; letter-spacing: .05em; }
+.konteks dd { margin: 2px 0 0; }
+
+/* ---------- 5. Dashboard ---------- */
+.hero {
+  background: var(--grad); color: #fff; border-radius: 22px; padding: 30px 34px; margin-bottom: 24px;
+  position: relative; overflow: hidden; box-shadow: 0 14px 34px rgba(234, 88, 12, .3);
+}
+.hero::after { content: ""; position: absolute; right: -60px; top: -80px; width: 280px; height: 280px; border-radius: 50%; background: rgba(255, 255, 255, .13); }
+.hero::before { content: ""; position: absolute; right: 120px; bottom: -110px; width: 220px; height: 220px; border-radius: 50%; background: rgba(255, 255, 255, .09); }
+.hero h2 { font-size: 28px; font-weight: 800; position: relative; z-index: 1; }
+.hero p { margin: 6px 0 0; opacity: .92; position: relative; z-index: 1; }
+.hero .chip { background: rgba(255, 255, 255, .22); color: #fff; display: inline-block; margin-top: 14px; position: relative; z-index: 1; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat { padding: 20px; }
+.stat-label { font-size: 13px; color: var(--muted); font-weight: 600; }
+.stat-nilai { font-size: 34px; font-weight: 800; color: var(--o-600); line-height: 1.1; margin: 6px 0 2px; }
+.stat-cat { font-size: 12px; color: var(--muted); }
+
+.section-title { font-size: 18px; font-weight: 800; margin: 0 0 14px; }
+.kartu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-bottom: 28px; }
+.kartu {
+  display: flex; flex-direction: column; gap: 10px; padding: 22px; color: inherit; position: relative;
+  transition: transform .15s, box-shadow .2s, border-color .2s;
+}
+.kartu:hover { transform: translateY(-3px); border-color: var(--o-300); box-shadow: 0 14px 30px rgba(234, 88, 12, .16); color: inherit; }
+.kartu-atas { display: flex; align-items: center; justify-content: space-between; }
+.kartu-ikon { width: 46px; height: 46px; border-radius: 14px; background: var(--o-100); color: var(--o-600); display: grid; place-items: center; }
+.kartu-nomor { width: 28px; height: 28px; border-radius: 50%; background: var(--grad); color: #fff; font-weight: 800; font-size: 13px; display: grid; place-items: center; }
+.kartu h3 { font-size: 16px; }
+.kartu p { margin: 0; color: var(--muted); font-size: 13.5px; flex: 1; }
+.kartu-bawah { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px dashed var(--o-200); font-size: 13px; font-weight: 700; color: var(--o-700); }
+
+.dua-kolom { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 28px; }
+.daftar-item { list-style: none; margin: 0; padding: 0; }
+.daftar-item li { display: flex; gap: 14px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--line); }
+.daftar-item li:last-child { border-bottom: 0; }
+.tgl { width: 48px; flex-shrink: 0; text-align: center; background: var(--o-50); border-radius: 12px; padding: 6px 0; color: var(--o-700); }
+.tgl b { display: block; font-size: 18px; line-height: 1; }
+.tgl span { font-size: 11px; text-transform: uppercase; font-weight: 700; }
+.item-judul { font-weight: 700; font-size: 14px; }
+.item-sub { font-size: 12.5px; color: var(--muted); }
+
+/* ---------- 6a. Kalender ---------- */
+.kal-nav { display: flex; align-items: center; gap: 10px; }
+.kal-judul { font-size: 20px; font-weight: 800; min-width: 190px; text-align: center; }
+.kal-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
+.kal-hari { padding: 12px 8px; text-align: center; font-size: 12px; font-weight: 800; color: var(--o-900); background: var(--o-50); text-transform: uppercase; letter-spacing: .05em; }
+.kal-sel { min-height: 104px; padding: 8px; border-top: 1px solid var(--line); border-right: 1px solid var(--line); position: relative; }
+.kal-sel:nth-child(7n) { border-right: 0; }
+.kal-sel.luar { background: #fffcf9; }
+.kal-sel.luar .kal-angka { color: #cdb9a8; }
+.kal-angka { font-weight: 700; font-size: 13px; display: inline-grid; place-items: center; min-width: 26px; height: 26px; border-radius: 50%; }
+.kal-sel.hari-ini .kal-angka { background: var(--grad); color: #fff; }
+.kal-tambah { position: absolute; top: 8px; right: 8px; opacity: 0; color: var(--o-600); }
+.kal-sel:hover .kal-tambah { opacity: 1; }
+.acara { display: block; margin-top: 4px; padding: 3px 8px; border-radius: 8px; font-size: 11.5px; font-weight: 700; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.acara-forum { background: var(--o-500); color: #fff; }
+.acara-batas { background: var(--bad-bg); color: var(--bad); }
+.acara-lain  { background: var(--o-100); color: var(--o-700); }
+a.acara:hover { filter: brightness(.95); }
+.legenda { display: flex; gap: 16px; font-size: 12.5px; color: var(--muted); margin: 14px 4px; flex-wrap: wrap; }
+.legenda i { display: inline-block; width: 12px; height: 12px; border-radius: 4px; margin-right: 6px; vertical-align: -1px; }
+
+/* ---------- 6b. Pustaka ---------- */
+.chip-filter { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.chip-filter a { padding: 7px 14px; border-radius: 999px; background: #fff; border: 1px solid var(--line); font-weight: 600; font-size: 13px; color: var(--ink); }
+.chip-filter a small { color: var(--muted); margin-left: 4px; }
+.chip-filter a.aktif { background: var(--grad); color: #fff; border-color: transparent; }
+.chip-filter a.aktif small { color: rgba(255, 255, 255, .85); }
+.dok-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.dok { padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+.dok-atas { display: flex; align-items: center; justify-content: space-between; }
+.ext { background: var(--o-100); color: var(--o-700); font-weight: 800; font-size: 12px; padding: 6px 10px; border-radius: 10px; }
+.dok h3 { font-size: 15px; }
+.dok p { margin: 0; font-size: 13px; color: var(--muted); flex: 1; }
+.dok-meta { font-size: 12px; color: var(--muted); }
+.dok-aksi { display: flex; gap: 8px; align-items: center; }
+
+/* ---------- 6c. Indikator ---------- */
+.ind-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px; }
+.ind { padding: 20px; }
+.ind-kode { display: inline-block; background: var(--grad); color: #fff; font-weight: 800; font-size: 12px; padding: 4px 10px; border-radius: 8px; }
+.ind h3 { margin: 10px 0 2px; font-size: 15px; }
+.ind-nilai { font-size: 32px; font-weight: 800; color: var(--o-600); margin: 8px 0 6px; }
+.ind-nilai small { font-size: 14px; font-weight: 600; color: var(--muted); }
+.bar { height: 8px; border-radius: 99px; background: var(--o-100); overflow: hidden; margin-bottom: 10px; }
+.bar span { display: block; height: 100%; background: var(--grad); border-radius: 99px; }
+.sel-ind { line-height: 1.35; }
+.sel-ind b { display: block; font-size: 15px; }
+.sel-ind small { color: var(--muted); }
+.input-target { max-width: 110px; }
+
+/* ---------- 7. Login ---------- */
+.login-wrap { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; }
+.login-visual {
+  background: var(--grad); color: #fff; padding: 56px; display: flex; flex-direction: column; justify-content: space-between;
+  position: relative; overflow: hidden;
+}
+.login-visual::after { content: ""; position: absolute; right: -120px; bottom: -120px; width: 420px; height: 420px; border-radius: 50%; background: rgba(255, 255, 255, .12); }
+.login-visual::before { content: ""; position: absolute; left: -80px; top: 30%; width: 260px; height: 260px; border-radius: 50%; background: rgba(255, 255, 255, .08); }
+.login-visual > * { position: relative; z-index: 1; }
+.login-visual .brand-logo { background: rgba(255, 255, 255, .25); box-shadow: none; }
+.login-visual .brand-nama { color: #fff; }
+.login-visual h1 { font-size: 40px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 14px; }
+.login-visual p { max-width: 460px; opacity: .93; font-size: 16px; }
+.login-fitur { display: grid; grid-template-columns: repeat(2, auto); gap: 8px 22px; font-size: 14px; font-weight: 600; justify-content: start; }
+.login-form-wrap { display: grid; place-items: center; padding: 32px; }
+.login-form { width: 100%; max-width: 400px; }
+.login-form h2 { font-size: 28px; font-weight: 800; margin-bottom: 6px; }
+.login-form .field { margin-top: 16px; }
+.login-form .btn { width: 100%; justify-content: center; margin-top: 24px; padding: 13px; }
+
+/* ---------- 8. Responsif ---------- */
+@media (max-width: 1100px) {
+  .stat-grid { grid-template-columns: repeat(2, 1fr); }
+  .kartu-grid, .dok-grid, .ind-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 860px) {
+  .sidebar { transform: translateX(-100%); box-shadow: 0 0 40px rgba(0, 0, 0, .2); }
+  .sidebar.buka { transform: none; }
+  .main { margin-left: 0; }
+  .btn-menu { display: grid; place-items: center; }
+  .topbar, .content { padding-left: 16px; padding-right: 16px; }
+  .dua-kolom { grid-template-columns: 1fr; }
+  .form-grid { grid-template-columns: 1fr; }
+  .login-wrap { grid-template-columns: 1fr; }
+  .login-visual { padding: 32px; min-height: 260px; }
+  .login-visual h1 { font-size: 30px; }
+  .kal-sel { min-height: 74px; padding: 4px; }
+  .acara { font-size: 10px; padding: 2px 4px; }
+}
+@media (max-width: 560px) {
+  .stat-grid, .kartu-grid, .dok-grid, .ind-grid { grid-template-columns: 1fr; }
+  .hero { padding: 24px; }
+  .hero h2 { font-size: 22px; }
+}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}{% load ranah_tags %}
+{% comment %}
+  workspace/pustaka.html - Komponen 5: galeri kartu dokumen.
+  Chip kategori memfilter lewat ?kategori=kode. Unduh lewat view
+  'pustaka_unduh' (wajib login), bukan tautan media langsung.
+{% endcomment %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Komponen 5</p>
+    <h2>{{ judul }}</h2>
+  </div>
+  <div class="aksi-kepala">
+    {% if bisa_tambah %}
+      <a class="btn btn-primary" href="{% url 'pustaka_tambah' %}">{% ikon "tambah" 18 %} Unggah dokumen</a>
+    {% endif %}
+  </div>
+</div>
+
+<form class="card filter-bar" method="get">
+  <input class="input cari" type="search" name="q" value="{{ q }}" placeholder="Cari judul atau deskripsi dokumen…">
+  {% if kategori_dipilih %}<input type="hidden" name="kategori" value="{{ kategori_dipilih }}">{% endif %}
+  <button class="btn btn-ghost" type="submit">{% ikon "cari" 16 %} Cari</button>
+</form>
+
+<div class="chip-filter">
+  <a href="{% url 'pustaka' %}" class="{% if not kategori_dipilih %}aktif{% endif %}">Semua <small>{{ total }}</small></a>
+  {% for kode, nama, jumlah in kategori_opsi %}
+    <a href="?kategori={{ kode }}" class="{% if kode == kategori_dipilih %}aktif{% endif %}">{{ nama }} <small>{{ jumlah }}</small></a>
+  {% endfor %}
+</div>
+
+<div class="dok-grid">
+  {% for d in object_list %}
+    <article class="card dok">
+      <div class="dok-atas">
+        <span class="ext">{{ d.ekstensi }}</span>
+        <span class="badge badge-hak">{{ d.get_kategori_display }}</span>
+      </div>
+      <h3>{{ d.judul }}</h3>
+      <p>{{ d.deskripsi|default:"Tanpa deskripsi."|truncatechars:110 }}</p>
+      <div class="dok-meta">{{ d.diunggah_oleh|default:"–" }} · {{ d.dibuat|date:"j M Y" }}</div>
+      <div class="dok-aksi">
+        <a class="btn btn-primary btn-sm" href="{% url 'pustaka_unduh' d.pk %}">{% ikon "unduh" 16 %} Unduh</a>
+        {% if bisa_ubah %}
+          <a class="btn-icon" href="{% url 'pustaka_ubah' d.pk %}" title="Ubah">{% ikon "ubah" 16 %}</a>
+          <a class="btn-icon bahaya" href="{% url 'pustaka_hapus' d.pk %}" title="Hapus">{% ikon "hapus" 16 %}</a>
+        {% endif %}
+      </div>
+    </article>
+  {% empty %}
+    <div class="card card-pad kosong" style="grid-column:1/-1">Belum ada dokumen pada kategori ini.</div>
+  {% endfor %}
+</div>
+
+{% if is_paginated %}
+  <div class="paginasi">
+    <span>Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}</span>
+    <div class="tombol">
+      {% if page_obj.has_previous %}<a class="btn btn-ghost btn-sm" href="?{{ qs }}&page={{ page_obj.previous_page_number }}">‹ Sebelumnya</a>{% endif %}
+      {% if page_obj.has_next %}<a class="btn btn-ghost btn-sm" href="?{{ qs }}&page={{ page_obj.next_page_number }}">Berikutnya ›</a>{% endif %}
+    </div>
+  </div>
+{% endif %}
+{% endblock %}

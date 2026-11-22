@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load ranah_tags %}
+
+{% block content %}
+<div class="container mt-4">
+  <div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h2 class="mb-1">Ubah Data Pencapaian OPD</h2>
+        <small class="text-muted">OPD dan Jenis Data dikunci; hanya Tahun, Triwulan, dan Nilai yang dapat diperbarui.</small>
+      </div>
+      <a href="{% url 'daftar_pencapaian' %}" class="btn-icon" title="Kembali ke Daftar">
+        {% ikon "kembali" 16 %}
+      </a>
+    </div>
+
+    <form method="post">
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.opd.id_for_label }}">OPD</label>
+        {{ form.opd }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.jenis_data.id_for_label }}">Jenis Data</label>
+        {{ form.jenis_data }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.tahun.id_for_label }}">Tahun</label>
+        {{ form.tahun }}
+        {{ form.tahun.errors }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.triwulan.id_for_label }}">Triwulan</label>
+        {{ form.triwulan }}
+        {{ form.triwulan.errors }}
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label" for="{{ form.nilai.id_for_label }}">Nilai</label>
+        {{ form.nilai }}
+        {{ form.nilai.errors }}
+      </div>
+
+      <div class="mt-4 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        <a href="{% url 'daftar_pencapaian' %}" class="btn btn-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

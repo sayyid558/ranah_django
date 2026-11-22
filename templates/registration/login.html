@@ -1,0 +1,60 @@
+{% comment %}
+  Halaman login. Dipakai otomatis oleh LoginView bawaan Django
+  (lokasi: templates/registration/login.html). Berdiri sendiri (tidak
+  memakai base.html) karena tampilannya layar penuh dua kolom.
+  Variabel `form` = AuthenticationForm bawaan (field username & password).
+{% endcomment %}{% load static ranah_tags %}<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Masuk · RANAH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/ranah.css' %}">
+</head>
+<body>
+<div class="login-wrap">
+  <section class="login-visual">
+    <div class="brand">
+      <div class="brand-logo">{% ikon "awan" 24 %}</div>
+      <div class="brand-nama">RANAH</div>
+    </div>
+    <div>
+      <h1>Ruang Kerja Digital<br>Koordinasi Data</h1>
+      <p>Satu tempat untuk kebutuhan data, verifikasi, tindak lanjut forum, kalender koordinasi, pustaka dokumen, dan rekap indikator.</p>
+    </div>
+    <div class="login-fitur">
+      <span>① Matriks Kebutuhan Data</span><span>④ Kalender &amp; Pengingat</span>
+      <span>② Log Verifikasi</span><span>⑤ Pustaka Dokumen</span>
+      <span>③ Tindak Lanjut Forum</span><span>⑥ Rekap Indikator</span>
+    </div>
+  </section>
+
+  <section class="login-form-wrap">
+    <form class="login-form" method="post">
+      {% csrf_token %}
+      <p class="eyebrow">Selamat datang</p>
+      <h2>Masuk ke RANAH</h2>
+      <p class="muted">Gunakan akun yang diberikan oleh Tim Teknis/Tim TI.</p>
+
+      {% if form.errors %}
+        <div class="alert alert-warn" style="margin-top:16px">Username atau kata sandi salah. Silakan coba lagi.</div>
+      {% endif %}
+
+      <div class="field">
+        <label for="{{ form.username.id_for_label }}">Username</label>
+        <input class="input" type="text" name="username" id="{{ form.username.id_for_label }}" autofocus autocomplete="username" required>
+      </div>
+      <div class="field">
+        <label for="{{ form.password.id_for_label }}">Kata sandi</label>
+        <input class="input" type="password" name="password" id="{{ form.password.id_for_label }}" autocomplete="current-password" required>
+      </div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn btn-primary" type="submit">Masuk</button>
+    </form>
+  </section>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+{% comment %}
+  base.html - kerangka dasar semua halaman setelah login.
+  Berisi: sidebar (menu 6 komponen), topbar, area pesan, dan blok konten.
+  Template lain memakai tag extends lalu mengisi blok "content".
+  Variabel `menu` datang dari workspace/context_processors.py.
+  Variabel `aktif` (diisi view) menandai menu yang sedang terbuka.
+{% endcomment %}{% load static ranah_tags %}<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ judul|default:"Beranda" }}{% endblock %} · RANAH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/ranah.css' %}">
+</head>
+<body>
+<div class="app">
+
+  {# ============ SIDEBAR ============ #}
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">{% ikon "awan" 24 %}</div>
+      <div>
+        <div class="brand-nama">RANAH</div>
+        <div class="brand-sub">Ruang Kerja Digital</div>
+      </div>
+    </div>
+
+    <nav class="nav">
+      <a class="nav-item {% if aktif == 'dashboard' %}aktif{% endif %}" href="{% url 'dashboard' %}">
+        {% ikon "beranda" 18 %}<span>Beranda</span>
+      </a>
+      <!-- <a class="nav-item {% if aktif == 'tambah_pencapaian' %}aktif{% endif %}" href="{% url 'tambah_pencapaian' %}">
+        {% ikon "tambah" 18 %}<span>Input Data OPD</span>
+      </a> -->
+      <!-- <a href="{% url 'daftar_pencapaian' %}" class="nav-link {% if aktif == 'daftar_pencapaian' %}active{% endif %}">
+            {% ikon "tambah" 18 %}<span>Hasil Input Data OPD</span>
+      </a> -->
+      <a class="nav-item {% if aktif == 'daftar_pencapaian' %}aktif{% endif %}" href="{% url 'daftar_pencapaian' %}">
+        {% ikon "tabel" 18 %}<span>Hasil Input Data OPD</span>
+      </a>
+
+      <div class="nav-label">6 Komponen</div>
+      {% for m in menu %}
+        <a class="nav-item {% if aktif == m.kunci %}aktif{% endif %}" href="{% url m.url %}">
+          <span class="nav-nomor">{{ m.nomor }}</span><span>{{ m.judul }}</span>
+        </a>
+        
+        
+      {% endfor %}
+      {% if user.is_staff %}
+        <div class="nav-label">Administrasi</div>
+        <a class="nav-item" href="{% url 'admin:index' %}">{% ikon "matriks" 18 %}<span>Panel Admin</span></a>
+      {% endif %}
+    </nav>
+
+    <div class="sidebar-foot">
+      <div class="user-card">
+        <div class="avatar">{{ user.nama_tampil|slice:":1"|upper }}</div>
+        <div>
+          <div class="user-nama">{{ user.nama_tampil }}</div>
+          <div class="user-peran">{{ user.label_peran }}{% if user.opd %} · {{ user.opd }}{% endif %}</div>
+        </div>
+      </div>
+      {# Logout wajib POST di Django 5 #}
+      <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button class="btn-keluar" type="submit">{% ikon "keluar" 18 %} Keluar</button>
+      </form>
+    </div>
+  </aside>
+
+  {# ============ KONTEN UTAMA ============ #}
+  <div class="main">
+    <header class="topbar">
+      <button class="btn-menu" id="btn-menu" type="button" aria-label="Buka menu">{% ikon "menu" 20 %}</button>
+      <h1>{% block heading %}{{ judul|default:"Beranda" }}{% endblock %}</h1>
+      <div class="topbar-kanan"><span class="chip">{{ user.label_peran }}</span></div>
+    </header>
+
+    <main class="content">
+      {% if messages %}
+        <div class="pesan-list">
+          {% for pesan in messages %}
+            <div class="pesan {{ pesan.tags }}">{{ pesan }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+<script src="{% static 'js/ranah.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% comment %}
+  crud/form.html - formulir generik tambah/ubah untuk SEMUA komponen.
+  Variabel dari view:
+    form        ModelForm yang dirender
+    aksi_label  "Tambah" / "Ubah" (kosong untuk form jawab/status)
+    batal_url   tujuan tombol Batal
+    konteks     (opsional) daftar (label, nilai) info read-only di atas form
+  enctype multipart wajib agar unggah berkas (Pustaka Dokumen) berfungsi.
+{% endcomment %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Formulir</p>
+    <h2>{{ aksi_label }} {{ judul }}</h2>
+  </div>
+</div>
+
+<div class="card form-card">
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+
+    {% if konteks %}
+      <dl class="konteks">
+        {% for label, nilai in konteks %}
+          <div><dt>{{ label }}</dt><dd>{{ nilai }}</dd></div>
+        {% endfor %}
+      </dl>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-warn">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <div class="form-grid">
+      {% for f in form %}
+        <div class="field {% if f.widget_type == 'textarea' %}lebar{% endif %} {% if f.widget_type == 'checkbox' %}cek{% endif %}">
+          {% if f.widget_type == 'checkbox' %}
+            <label class="cek-label">{{ f }} <span>{{ f.label }}</span></label>
+          {% else %}
+            <label for="{{ f.id_for_label }}">{{ f.label }}{% if f.field.required %}<em>*</em>{% endif %}</label>
+            {{ f }}
+          {% endif %}
+          {% if f.help_text %}<small>{{ f.help_text }}</small>{% endif %}
+          {% for e in f.errors %}<small class="err">{{ e }}</small>{% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="form-aksi">
+      <button class="btn btn-primary" type="submit">Simpan</button>
+      <a class="btn btn-ghost" href="{{ batal_url }}">Batal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% comment %}
+  crud/hapus.html - halaman konfirmasi hapus generik.
+  `object` otomatis disediakan DeleteView. Penghapusan terjadi lewat POST.
+{% endcomment %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Konfirmasi</p>
+    <h2>Hapus data</h2>
+  </div>
+</div>
+
+<div class="card form-card">
+  <p>Anda yakin ingin menghapus <strong>{{ object }}</strong>?</p>
+  <p class="muted">Tindakan ini tidak dapat dibatalkan dan data terkait (mis. log verifikasi) ikut terhapus.</p>
+  <form method="post" class="form-aksi">
+    {% csrf_token %}
+    <button class="btn btn-danger" type="submit">Ya, hapus</button>
+    <a class="btn btn-ghost" href="{{ batal_url }}">Batal</a>
+  </form>
+</div>
+{% endblock %}

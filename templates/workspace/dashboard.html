@@ -1,0 +1,112 @@
+{% extends "base.html" %}{% load ranah_tags %}
+{% comment %}
+  workspace/dashboard.html - Beranda RANAH.
+  Susunan: banner sambutan -> 4 angka ringkas -> 6 kartu komponen
+  (mengikuti Gambar 4.6) -> agenda & jatuh tempo -> ringkasan indikator.
+  Semua variabel disiapkan oleh views.DashboardView.
+{% endcomment %}
+{% block title %}Beranda{% endblock %}
+{% block heading %}Beranda{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h2>Selamat datang, {{ user.nama_tampil }} 👋</h2>
+  <p>{% now "l, j F Y" %} · Ruang kerja bersama untuk koordinasi data PDRB triwulanan.</p>
+  <span class="chip">Triwulan {{ triwulan }} · {{ tahun|stringformat:"d" }}</span>
+</section>
+
+{# ---- Angka ringkas ---- #}
+<section class="stat-grid">
+  {% for s in statistik %}
+    <div class="card stat">
+      <div class="stat-label">{{ s.label }}</div>
+      <div class="stat-nilai">{{ s.nilai }}</div>
+      <div class="stat-cat">{{ s.catatan }}</div>
+    </div>
+  {% endfor %}
+</section>
+
+{# ---- 6 kartu komponen ---- #}
+<h3 class="section-title">Enam komponen ruang kerja</h3>
+<section class="kartu-grid">
+  {% for k in kartu %}
+    <a class="card kartu" href="{% url k.url %}">
+      <div class="kartu-atas">
+        <div class="kartu-ikon">{% ikon k.ikon 24 %}</div>
+        <div class="kartu-nomor">{{ k.nomor }}</div>
+      </div>
+      <h3>{{ k.judul }}</h3>
+      <p>{{ k.deskripsi }}</p>
+      <div class="kartu-bawah">
+        <span>{{ k.info }}</span>
+        <span class="badge badge-hak">{{ k.hak }}</span>
+      </div>
+    </a>
+  {% endfor %}
+</section>
+
+{# ---- Agenda & jatuh tempo ---- #}
+<section class="dua-kolom">
+  <div class="card card-pad">
+    <h3 class="section-title">Agenda mendatang</h3>
+    <ul class="daftar-item">
+      {% for a in agenda_mendatang %}
+        <li>
+          <div class="tgl"><b>{{ a.tanggal|date:"d" }}</b><span>{{ a.tanggal|date:"M" }}</span></div>
+          <div>
+            <div class="item-judul">{{ a.judul }}</div>
+            <div class="item-sub">{{ a.get_jenis_display }}{% if a.lokasi %} · {{ a.lokasi }}{% endif %}</div>
+          </div>
+        </li>
+      {% empty %}
+        <li class="muted">Belum ada agenda.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="card card-pad">
+    <h3 class="section-title">Batas data 14 hari ke depan</h3>
+    <ul class="daftar-item">
+      {% for b in jatuh_tempo %}
+        <li>
+          <div class="tgl"><b>{{ b.batas_waktu|date:"d" }}</b><span>{{ b.batas_waktu|date:"M" }}</span></div>
+          <div>
+            <div class="item-judul">{{ b.kode }} · {{ b.jenis_data }}</div>
+            <div class="item-sub">{{ b.opd }} · belum diterima</div>
+          </div>
+        </li>
+      {% empty %}
+        <li class="muted">Tidak ada batas data yang mendekat. 🎉</li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{# ---- Ringkasan indikator triwulan berjalan ---- #}
+<div class="card card-pad">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <h3 class="section-title" style="margin:0">Ringkasan indikator triwulan {{ triwulan }}</h3>
+    <a class="btn btn-ghost btn-sm" href="{% url 'indikator' %}">Lihat rekap lengkap</a>
+  </div>
+  <div class="tabel-wrap">
+    <table class="tabel">
+      <thead><tr><th>Kode</th><th>Indikator</th><th>Realisasi</th><th>Target</th><th>Capaian</th></tr></thead>
+      <tbody>
+        {% for i in indikator %}
+          <tr>
+            <td><span class="badge badge-hak">{{ i.indikator.kode }}</span></td>
+            <td>{{ i.indikator.nama }}</td>
+            <td>{% if i.nilai is None %}–{% else %}<strong>{{ i.nilai }}</strong> {{ i.indikator.satuan }}{% endif %}</td>
+            <td>{% if i.target is None %}–{% else %}{{ i.target }} {{ i.indikator.satuan }}{% endif %}</td>
+            <td>
+              {% if i.tercapai is None %}<span class="badge badge-belum">Belum dinilai</span>
+              {% elif i.tercapai %}<span class="badge badge-selesai">Tercapai</span>
+              {% else %}<span class="badge badge-revisi">Belum tercapai</span>{% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "base.html" %}{% load ranah_tags %}
+{% comment %}
+  crud/daftar.html - tabel generik untuk komponen 1, 2, dan 3.
+  Semua isi tabel disiapkan oleh workspace/views.py > DaftarView:
+    kepala  = daftar judul kolom
+    baris   = tiap baris: sel (isi), ubah/hapus (izin), tambahan (tombol ekstra)
+  Nama URL dibentuk dari `prefix`, mis. prefix="matriks" -> 'matriks_ubah'.
+{% endcomment %}
+
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Komponen</p>
+    <h2>{{ judul }}</h2>
+  </div>
+  <div class="aksi-kepala">
+    {% if bisa_tambah %}
+      <a class="btn btn-primary" href="{% url prefix|add:'_tambah' %}">{% ikon "tambah" 18 %} Tambah data</a>
+    {% endif %}
+  </div>
+</div>
+
+{% if tanpa_opd %}
+  <div class="alert alert-warn">Akun PIC Anda belum dihubungkan ke OPD/instansi. Hubungi Tim Teknis/TI agar data Anda dapat tampil.</div>
+{% elif dibatasi %}
+  <div class="alert alert-info">Menampilkan data milik OPD/instansi Anda saja ({{ user.opd }}).</div>
+{% endif %}
+
+{# ---- Bilah pencarian & filter (metode GET) ---- #}
+<form class="card filter-bar" method="get">
+  <input class="input cari" type="search" name="q" value="{{ q }}" placeholder="Cari data…">
+  {% if filter_status %}
+    <select class="input" name="status">
+      <option value="">Semua status</option>
+      {% for kode, nama in filter_status %}
+        <option value="{{ kode }}" {% if kode == status_dipilih %}selected{% endif %}>{{ nama }}</option>
+      {% endfor %}
+    </select>
+  {% endif %}
+  {% if filter_waktu %}
+    <select class="input" name="tahun">
+      <option value="">Semua tahun</option>
+      {% for t in tahun_opsi %}
+        <option value="{{ t|stringformat:'d' }}" {% if t|stringformat:'d' == tahun_dipilih %}selected{% endif %}>{{ t|stringformat:'d' }}</option>
+      {% endfor %}
+    </select>
+    <select class="input" name="triwulan">
+      <option value="">Semua triwulan</option>
+      {% for n in "1234" %}
+        <option value="{{ n }}" {% if n == triwulan_dipilih %}selected{% endif %}>Triwulan {{ n }}</option>
+      {% endfor %}
+    </select>
+  {% endif %}
+  <button class="btn btn-ghost" type="submit">{% ikon "cari" 16 %} Terapkan</button>
+  <a class="btn btn-ghost" href="{{ request.path }}">Atur ulang</a>
+</form>
+
+{# ---- Tabel ---- #}
+<div class="card">
+  <div class="tabel-wrap">
+    <table class="tabel">
+      <thead>
+        <tr>
+          {% for k in kepala %}<th>{{ k }}</th>{% endfor %}
+          <th style="text-align:right">Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in baris %}
+          <tr>
+            {% for c in r.sel %}
+              <td>
+                {% if c.tipe == "badge" %}
+                  <span class="badge badge-{{ c.kunci }}">{{ c.teks }}</span>
+                {% else %}{{ c.teks }}{% endif %}
+              </td>
+            {% endfor %}
+            <td class="aksi">
+              {% for t in r.tambahan %}
+                <a class="btn-icon" href="{{ t.url }}" title="{{ t.label }}">{% ikon t.ikon 16 %}</a>
+              {% endfor %}
+              {% if r.ubah %}
+                <a class="btn-icon" href="{% url prefix|add:'_ubah' r.obj.pk %}" title="Ubah">{% ikon "ubah" 16 %}</a>
+              {% endif %}
+              {% if r.hapus %}
+                <a class="btn-icon bahaya" href="{% url prefix|add:'_hapus' r.obj.pk %}" title="Hapus">{% ikon "hapus" 16 %}</a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td class="kosong" colspan="{{ kepala|length|add:1 }}">Belum ada data yang cocok.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if is_paginated %}
+    <div class="paginasi">
+      <span>Halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }} · {{ page_obj.paginator.count }} data</span>
+      <div class="tombol">
+        {% if page_obj.has_previous %}<a class="btn btn-ghost btn-sm" href="?{{ qs }}&page={{ page_obj.previous_page_number }}">‹ Sebelumnya</a>{% endif %}
+        {% if page_obj.has_next %}<a class="btn btn-ghost btn-sm" href="?{{ qs }}&page={{ page_obj.next_page_number }}">Berikutnya ›</a>{% endif %}
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

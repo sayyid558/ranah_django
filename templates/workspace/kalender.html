@@ -1,0 +1,79 @@
+{% extends "base.html" %}{% load ranah_tags %}
+{% comment %}
+  workspace/kalender.html - Komponen 4: kalender bulanan.
+  `grid` = daftar minggu; tiap minggu berisi 7 sel
+  {tanggal, bulan_ini, hari_ini, acara[]}. Navigasi bulan memakai ?bulan=YYYY-MM.
+  Klik ikon + di sebuah tanggal untuk menambah agenda pada hari itu.
+{% endcomment %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Komponen 4</p>
+    <h2>{{ judul }}</h2>
+  </div>
+  <div class="aksi-kepala">
+    <div class="kal-nav">
+      <a class="btn btn-ghost btn-sm" href="?bulan={{ bulan_sebelum }}">{% ikon "kiri" 16 %}</a>
+      <span class="kal-judul">{{ judul_bulan }}</span>
+      <a class="btn btn-ghost btn-sm" href="?bulan={{ bulan_sesudah }}">{% ikon "kanan" 16 %}</a>
+    </div>
+    {% if bisa_tambah %}
+      <a class="btn btn-primary" href="{% url 'agenda_tambah' %}">{% ikon "tambah" 18 %} Tambah agenda</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="overflow:hidden">
+  <div class="kal-grid">
+    {% for h in nama_hari %}<div class="kal-hari">{{ h }}</div>{% endfor %}
+    {% for pekan in grid %}
+      {% for sel in pekan %}
+        <div class="kal-sel {% if not sel.bulan_ini %}luar{% endif %} {% if sel.hari_ini %}hari-ini{% endif %}">
+          <span class="kal-angka">{{ sel.tanggal.day }}</span>
+          {% if bisa_tambah %}
+            <a class="kal-tambah" href="{% url 'agenda_tambah' %}?tanggal={{ sel.tanggal|date:'Y-m-d' }}" title="Tambah agenda">{% ikon "tambah" 16 %}</a>
+          {% endif %}
+          {% for a in sel.acara %}
+            {% if a.pk and bisa_ubah %}
+              <a class="acara acara-{{ a.jenis }}" href="{% url 'agenda_ubah' a.pk %}" title="{{ a.judul }}">{% if a.jam %}{{ a.jam|time:"H:i" }} {% endif %}{{ a.judul }}</a>
+            {% else %}
+              <span class="acara acara-{{ a.jenis }}" title="{{ a.judul }}">{% if a.jam %}{{ a.jam|time:"H:i" }} {% endif %}{{ a.judul }}</span>
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</div>
+
+<div class="legenda">
+  <span><i style="background:var(--o-500)"></i>Forum Data &amp; Fenomena</span>
+  <span><i style="background:#fecaca"></i>Batas waktu data</span>
+  <span><i style="background:var(--o-100)"></i>Kegiatan lain</span>
+  <span>🔔 Pengingat email otomatis ke PIC: <code>python manage.py kirim_pengingat</code></span>
+</div>
+
+<div class="card card-pad">
+  <h3 class="section-title">Agenda bulan {{ judul_bulan }}</h3>
+  <ul class="daftar-item">
+    {% for a in agenda_bulan %}
+      <li>
+        <div class="tgl"><b>{{ a.tanggal|date:"d" }}</b><span>{{ a.tanggal|date:"M" }}</span></div>
+        <div style="flex:1">
+          <div class="item-judul">{{ a.judul }}</div>
+          <div class="item-sub">
+            {{ a.get_jenis_display }}{% if a.jam %} · {% ikon "jam" 13 %} {{ a.jam|time:"H:i" }}{% endif %}{% if a.lokasi %} · {{ a.lokasi }}{% endif %}
+            · pengingat H-{{ a.pengingat_hari }}
+          </div>
+        </div>
+        {% if bisa_ubah %}
+          <a class="btn-icon" href="{% url 'agenda_ubah' a.pk %}" title="Ubah">{% ikon "ubah" 16 %}</a>
+          <a class="btn-icon bahaya" href="{% url 'agenda_hapus' a.pk %}" title="Hapus">{% ikon "hapus" 16 %}</a>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="muted">Tidak ada agenda pada bulan ini.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

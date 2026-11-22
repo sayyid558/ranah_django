@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Input Nilai Berdasarkan OPD & Jenis Data</h2>
+    <!-- KODE UNTUK MENAMPILKAN POPUP/NOTIFIKASI -->
+    <!-- {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %} -->
+    <!-- AKHIR KODE NOTIFIKASI -->
+    <form method="post" id="pencapaianForm" data-jenis-data-url="{% url 'get_jenis_data' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Simpan</button>
+    </form>
+</div>
+
+<!-- Script AJAX untuk Dropdown Dependent (OPD -> Jenis Data) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    const dataJenisData = {
+        "Dinas Pertanian": [
+            "Luas Panen Padi", "Luas Panen Jagung", 
+            "Produksi Hortikultura Semusim", "Produksi Hortikultura Tahunan", 
+            "Harga Hortikultura Semusim", "Harga Hortikultura Tahunan"
+        ],
+        "Dinas Perkebunan": [
+            "Produksi Perkebunan Semusim", "Produksi Perkebunan Tahunan", 
+            "Harga Perkebunan Semusim", "Harga Perkebunan Tahunan"
+        ],
+        "Dinas Perikanan": [
+            "Produksi Perikanan Tangkap", "Harga Perikanan Tangkap", 
+            "Produksi Perikanan Budidaya", "Harga Perikanan Budidaya"
+        ],
+        "KPHL Pasaman Raya": [
+            "Produksi Komoditas Kehutanan", "Harga Komoditras Kehutanan"
+        ],
+        "Dinas PU": [
+            "Proyek yang sedang berjalan", "Anggaran Proyek Berjalan"
+        ]
+    };
+
+    $('#id_opd').change(function () {
+        const selectedOpd = $(this).val();
+        const jenisDataSelect = $('#id_jenis_data');
+        
+        jenisDataSelect.empty();
+        jenisDataSelect.append('<option value="">---------</option>');
+
+        if (selectedOpd && dataJenisData[selectedOpd]) {
+            dataJenisData[selectedOpd].forEach(function (item) {
+                jenisDataSelect.append(`<option value="${item}">${item}</option>`);
+            });
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const inputNilai = document.getElementById("id_nilai");
+
+        if (inputNilai) {
+            // Format angka saat halaman dimuat (jika ada nilai sebelumnya)
+            if (inputNilai.value) {
+                let cleanVal = inputNilai.value.replace(/\D/g, "");
+                inputNilai.value = new Intl.NumberFormat("id-ID").format(cleanVal);
+            }
+
+            // Format otomatis saat pengguna mengetik
+            inputNilai.addEventListener("input", function (e) {
+                let value = e.target.value.replace(/\D/g, ""); // Hanya ambil angka
+                if (value) {
+                    // Format ke Rupiah/Ribuan dengan titik (contoh: 60.000)
+                    e.target.value = new Intl.NumberFormat("id-ID").format(value);
+                } else {
+                    e.target.value = "";
+                }
+            });
+
+            // Bersihkan titik sebelum form disubmit agar valid di backend Django
+            const form = inputNilai.closest("form");
+            if (form) {
+                form.addEventListener("submit", function () {
+                    inputNilai.value = inputNilai.value.replace(/\./g, ""); // Hapus semua titik
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}

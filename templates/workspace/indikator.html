@@ -1,0 +1,88 @@
+{% extends "base.html" %}{% load ranah_tags %}
+{% comment %}
+  workspace/indikator.html - Komponen 6: Rekap Indikator (dasbor sederhana).
+  Bagian atas : 6 kartu indikator untuk satu triwulan (?triwulan=).
+  Bagian bawah: tabel indikator x 4 triwulan untuk satu tahun (?tahun=).
+  Seluruh angka dihitung otomatis di workspace/indikator.py.
+{% endcomment %}
+{% block content %}
+<div class="page-head">
+  <div>
+    <p class="eyebrow">Komponen 6</p>
+    <h2>{{ judul }}</h2>
+  </div>
+  <div class="aksi-kepala">
+    {% if bisa_ubah %}
+      <a class="btn btn-primary" href="{% url 'indikator_target' %}?tahun={{ tahun|stringformat:'d' }}">{% ikon "ubah" 16 %} Atur target</a>
+    {% endif %}
+  </div>
+</div>
+
+<div class="alert alert-info">
+  Realisasi dihitung otomatis dari Komponen 1-3 (butir data, verifikasi, tindak lanjut). Definisi H1-H3 &amp; P1-P3 dapat disesuaikan dengan Tabel 3.7 di <code>workspace/indikator.py</code>.
+</div>
+
+<form class="card filter-bar" method="get">
+  <select class="input" name="tahun">
+    {% for t in tahun_opsi %}<option value="{{ t|stringformat:'d' }}" {% if t == tahun %}selected{% endif %}>{{ t|stringformat:"d" }}</option>{% endfor %}
+  </select>
+  <select class="input" name="triwulan">
+    {% for n in "1234" %}<option value="{{ n }}" {% if n == triwulan|stringformat:"d" %}selected{% endif %}>Triwulan {{ n }}</option>{% endfor %}
+  </select>
+  <button class="btn btn-ghost" type="submit">{% ikon "cari" 16 %} Tampilkan</button>
+</form>
+
+{# ---- Kartu triwulan terpilih ---- #}
+<h3 class="section-title">Triwulan {{ triwulan }} · {{ tahun|stringformat:"d" }}</h3>
+<section class="ind-grid">
+  {% for i in kartu %}
+    <div class="card ind">
+      <span class="ind-kode">{{ i.indikator.kode }}</span>
+      <h3>{{ i.indikator.nama }}</h3>
+      <div class="item-sub">{{ i.indikator.keterangan }}</div>
+      <div class="ind-nilai">
+        {% if i.nilai is None %}–{% else %}{{ i.nilai }} <small>{{ i.indikator.satuan }}</small>{% endif %}
+      </div>
+      {% if i.indikator.satuan == "%" and i.nilai is not None %}
+        <div class="bar"><span style="width: {{ i.nilai|stringformat:'.1f' }}%"></span></div>
+      {% endif %}
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span class="item-sub">Target: {% if i.target is None %}belum diisi{% else %}{{ i.target }} {{ i.indikator.satuan }}{% endif %}</span>
+        {% if i.tercapai is None %}<span class="badge badge-belum">Belum dinilai</span>
+        {% elif i.tercapai %}<span class="badge badge-selesai">Tercapai</span>
+        {% else %}<span class="badge badge-revisi">Belum tercapai</span>{% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</section>
+
+{# ---- Matriks tahunan ---- #}
+<div class="card">
+  <div class="card-pad" style="padding-bottom:0"><h3 class="section-title">Rekap tahun {{ tahun|stringformat:"d" }}</h3></div>
+  <div class="tabel-wrap">
+    <table class="tabel">
+      <thead>
+        <tr><th>Indikator</th><th>Arah</th><th>TW I</th><th>TW II</th><th>TW III</th><th>TW IV</th></tr>
+      </thead>
+      <tbody>
+        {% for b in baris %}
+          <tr>
+            <td class="sel-ind"><b>{{ b.indikator.kode }} · {{ b.indikator.nama }}</b><small>Sumber: {{ b.indikator.sumber }}</small></td>
+            <td>{% if b.indikator.arah == "naik" %}↑ makin tinggi makin baik{% else %}↓ makin rendah makin baik{% endif %}</td>
+            {% for c in b.sel %}
+              <td>
+                {% if c.nilai is None %}<span class="muted">–</span>{% else %}
+                  <strong>{{ c.nilai }}</strong> {{ b.indikator.satuan }}
+                {% endif %}
+                <div class="item-sub">target {% if c.target is None %}–{% else %}{{ c.target }}{% endif %}</div>
+                {% if c.tercapai is True %}<span class="badge badge-selesai">✓</span>
+                {% elif c.tercapai is False %}<span class="badge badge-revisi">✗</span>{% endif %}
+              </td>
+            {% endfor %}
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
