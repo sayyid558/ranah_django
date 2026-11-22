@@ -44,7 +44,7 @@ def _env_bool(nama: str, default: bool = False) -> bool:
 # ---------------------------------------------------------------------------
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "kunci-pengembangan-jangan-dipakai-di-produksi")
 DEBUG = _env_bool("DJANGO_DEBUG", True)
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "148.230.103.203,bpspasamanbarat.tech").split(",") if h.strip()]
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get("DJANGO_ALLOWED_HOSTS", "bpspasamanbarat.tech,www.bpspasamanbarat.tech,148.230.103.203,localhost,127.0.0.1",).split(",") if h.strip()]
 
 # ---------------------------------------------------------------------------
 # 3. Aplikasi yang aktif
