@@ -1,19 +1,22 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: mysql:8.0
     container_name: ranah_db
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-ranah_db}
-      POSTGRES_USER: ${POSTGRES_USER:-ranah_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      MYSQL_DATABASE: ${DB_NAME:-ranah_db}
+      MYSQL_USER: ${DB_USER:-ranah_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-ranah_pass_123}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_pass_123}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ranah_user} -d ${POSTGRES_DB:-ranah_db}"]
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p${MYSQL_ROOT_PASSWORD:-root_pass_123} --silent"]
       interval: 5s
       timeout: 5s
-      retries: 10
+      retries: 15
 
   web:
     build:
@@ -24,8 +27,9 @@ services:
     env_file:
       - .env
     environment:
-      DB_HOST: db
-      DB_PORT: 5432
+      DB_ENGINE: mysql
+      DB_HOST: ranah_db
+      DB_PORT: "3306"
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
@@ -39,8 +43,24 @@ services:
       sh -c "python manage.py migrate --noinput &&
              python manage.py collectstatic --noinput &&
              python manage.py runserver 0.0.0.0:8000"
+  caddy:
+    image: caddy:2-alpine
+    container_name: ranah_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
 
 volumes:
-  postgres_data:
+  mysql_data:
   static_volume:
   media_volume:
+  caddy_data:
+  caddy_config:
+

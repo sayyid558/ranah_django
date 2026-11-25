@@ -180,3 +180,12 @@ EMAIL_USE_TLS = _env_bool("EMAIL_USE_TLS", False)
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "ranah@localhost")
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "https://bpspasamanbarat.tech,https://www.bpspasamanbarat.tech",
+    ).split(",")
+    if origin.strip()
+]

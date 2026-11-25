@@ -1,0 +1,3 @@
+bpspasamanbarat.tech, www.bpspasamanbarat.tech {
+    reverse_proxy ranah_web:8000
+}

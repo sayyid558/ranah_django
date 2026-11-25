@@ -1,0 +1,21 @@
+2026-11-22T16:58:34.458639 Project directory: /docker/ranah_pasbar
+2026-11-22T16:58:34.458999 Pulling project images
+2026-11-22T16:58:34.459868 ------------------------------
+2026-11-22T16:58:34.692631  web Skipped No image to be pulled
+2026-11-22T16:58:34.693587  Image mysql:8.0 Pulling 
+2026-11-22T16:58:36.608223  Image mysql:8.0 Pulled 
+2026-11-22T16:58:36.617213 ------------------------------
+2026-11-22T16:58:36.617363 Deploying project
+2026-11-22T16:58:36.619650 ------------------------------
+2026-11-22T16:58:36.813980  Container ranah_db Recreate 
+2026-11-22T16:58:40.786621  Container ranah_db Recreated 
+2026-11-22T16:58:40.787078  Container ranah_web Recreate 
+2026-11-22T16:58:51.120721  Container ranah_web Recreated 
+2026-11-22T16:58:51.120832  Container ranah_db Starting 
+2026-11-22T16:58:51.374667  Container ranah_db Started 
+2026-11-22T16:58:51.374731  Container ranah_db Waiting 
+2026-11-22T16:58:56.874655  Container ranah_db Healthy 
+2026-11-22T16:58:56.874741  Container ranah_web Starting 
+2026-11-22T16:58:57.109638  Container ranah_web Started 
+2026-11-22T16:58:57.117828 ------------------------------
+2026-11-22T16:58:57.117898 Project deployed successfully
